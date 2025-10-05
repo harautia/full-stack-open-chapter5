@@ -1,5 +1,6 @@
   const BlogForm = ({newTitle, newAuthor, newUrl, likes, handleAddBlog,
         handleTitleChange, handleAuthorChange, handleUrlChange, handleLikesChange}) =>  {
+      
     return (
     <div>
     <h2> Add blog to database </h2>

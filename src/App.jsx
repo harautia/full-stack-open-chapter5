@@ -12,13 +12,35 @@ const App = () => {
 
   const [errorMessage, setErrorMessage] = useState(null)
   const [notificationMessage, setNotificationMessage] = useState(null)
+  const [log, setLog] = useState("")
 
   const handleBlogDelete = (blogId) => {
+    if (window.confirm("Do you want to delete the blog?")) {
+    blogService
+      .deleteBlog(blogId)
+      .then(response => {
+        console.log(response)
+        showBlogs(prevBlogs => prevBlogs.filter(blog => blog.id !== blogId))
+      })
+    }
+    else {
+      setLog("Action discarded")
+    }
+  }
+
+  const handleAddLike = (blogId, likes) => {
+    console.log(blogId)
+    console.log(likes)
+    const content = {
+      likes: likes + 1
+    }
   blogService
-    .deleteBlog(blogId)
+    .addLikes(blogId, content)
     .then(response => {
-      console.log(response);
-      showBlogs(prevBlogs => prevBlogs.filter(blog => blog.id !== blogId))
+      console.log(response)
+      showBlogs(blogs.map(blog => 
+        blog.id === blogId ? { ...blog, likes: likes + 1 } : blog
+      ))
     })
   }
 
@@ -65,6 +87,8 @@ const App = () => {
     }
   }, [])
 
+;
+
   const handleAddBlog = event => {
   event.preventDefault()
   const blogObject = {
@@ -93,6 +117,8 @@ const App = () => {
   }, 5000)
   }
 
+
+  
   const [username, setUsername] = useState('') 
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
@@ -159,6 +185,39 @@ const App = () => {
       />
     </Togglable>
   )
+  const sortedBlogs = blogs.sort((a, b) => a.likes - b.likes)
+
+  const blogDetailsForm = () => (
+      <Togglable buttonLabel="show details" ref={blogFormRef}>
+      <div>
+      <h3> Blog Details</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Author</th>
+            <th>URL</th>
+            <th>Likes</th>
+            <th>Add One Like</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {sortedBlogs.map(blog => (
+            <tr key={blog.id}>
+              <td>{blog.title}</td>
+              <td>{blog.author}</td>
+              <td> <a href={blog.url} target="_blank" rel="noopener noreferrer"> {blog.url} </a></td>
+              <td>{blog.likes}</td>
+              <td> <button onClick={() => handleAddLike(blog.id, blog.likes)}> Add Like </button> </td>
+              <td> <button id="windowButton" onClick={() => handleBlogDelete(blog.id)}> Delete </button> </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      </div>
+    </Togglable>
+)
 
   return (
     <div>
@@ -173,32 +232,26 @@ const App = () => {
         </div>
       )}
 
-      {user && (
+    {user && (
       <div>
       <table>
         <thead>
           <tr>
-            <th>Title</th>
-            <th>Author</th>
-            <th>URL</th>
-            <th>Likes</th>
-            <th>Action</th>
+            <th>Blog Titles</th>
           </tr>
         </thead>
         <tbody>
           {blogs.map(blog => (
             <tr key={blog.id}>
               <td>{blog.title}</td>
-              <td>{blog.author}</td>
-              <td> <a href={blog.url} target="_blank" rel="noopener noreferrer"> {blog.url} </a></td>
-              <td>{blog.likes}</td>
-              <td> <button onClick={() => handleBlogDelete(blog.id)}> Delete </button> </td>
             </tr>
           ))}
         </tbody>
       </table>
       </div>
       )}
+
+      {user && blogDetailsForm()}
       <Footer />
       </div>
       )
