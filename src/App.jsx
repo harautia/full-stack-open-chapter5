@@ -12,19 +12,19 @@ const App = () => {
 
   const [errorMessage, setErrorMessage] = useState(null)
   const [notificationMessage, setNotificationMessage] = useState(null)
-  const [log, setLog] = useState("")
+  const [, setLog] = useState('')
 
   const handleBlogDelete = (blogId) => {
-    if (window.confirm("Do you want to delete the blog?")) {
-    blogService
-      .deleteBlog(blogId)
-      .then(response => {
-        console.log(response)
-        showBlogs(prevBlogs => prevBlogs.filter(blog => blog.id !== blogId))
-      })
+    if (window.confirm('Do you want to delete the blog?')) {
+      blogService
+        .deleteBlog(blogId)
+        .then(response => {
+          console.log(response)
+          showBlogs(prevBlogs => prevBlogs.filter(blog => blog.id !== blogId))
+        })
     }
     else {
-      setLog("Action discarded")
+      setLog('Action discarded')
     }
   }
 
@@ -34,44 +34,24 @@ const App = () => {
     const content = {
       likes: likes + 1
     }
-  blogService
-    .addLikes(blogId, content)
-    .then(response => {
-      console.log(response)
-      showBlogs(blogs.map(blog => 
-        blog.id === blogId ? { ...blog, likes: likes + 1 } : blog
-      ))
-    })
+    blogService
+      .addLikes(blogId, content)
+      .then(response => {
+        console.log(response)
+        showBlogs(blogs.map(blog => blog.id === blogId ? { ...blog, likes: likes + 1 } : blog
+        ))
+      })
   }
 
   const [newTitle, setNewTitle] = useState('')
-  const handleTitleChange = (event) => {
-    console.log('handleAuthorChange Executed', event.target.value)
-    setNewTitle(event.target.value)
-  }
-
   const [newAuthor, setNewAuthor] = useState('')
-  const handleAuthorChange = (event) => {
-    console.log('handleAuthorChange Executed', event.target.value)
-    setNewAuthor(event.target.value)
-  }
-
   const [newUrl, setNewUrl] = useState('')
-  const handleUrlChange = (event) => {
-    console.log('handleUrlChange Executed', event.target.value)
-    setNewUrl(event.target.value)
-  }
-
   const [likes, setLikes] = useState('')
-  const handleLikesChange = (event) => {
-    console.log('handleLikesChange Executed', event.target.value)
-    setLikes(event.target.value)
-  }
 
   const [blogs, showBlogs]= useState([])
   useEffect(() => {
     blogService
-    .getAllBlogs()
+      .getAllBlogs()
       .then(response => {
         showBlogs(response.data)
       })
@@ -87,51 +67,46 @@ const App = () => {
     }
   }, [])
 
-;
-
   const handleAddBlog = event => {
-  event.preventDefault()
-  const blogObject = {
-    id: String(blogs.length + 1),
-    title: newTitle, 
-    author: newAuthor,
-    url: newUrl,
-    likes: likes
-  }
-  blogService
-  .createBlog(blogObject)
-    .then(response => {
-      console.log(response)
-      showBlogs(blogs.concat(response.data))
-    })
-  setNewTitle('')
-  setNewAuthor('')
-  setNewUrl('')
-  setLikes('')
-  setNotificationMessage(
-    `Added blog title: '${newTitle}'`
-  )
-  console.log(notificationMessage)
-  setTimeout(() => {
-    setNotificationMessage(null)
-  }, 5000)
+    event.preventDefault()
+    const blogObject = {
+      id: String(blogs.length + 1),
+      title: newTitle,
+      author: newAuthor,
+      url: newUrl,
+      likes: likes
+    }
+    blogService
+      .createBlog(blogObject)
+      .then(response => {
+        console.log(response)
+        showBlogs(blogs.concat(response.data))
+      })
+    setNewTitle('')
+    setNewAuthor('')
+    setNewUrl('')
+    setLikes('')
+    setNotificationMessage(
+      `Added blog title: '${newTitle}'`
+    )
+    console.log(notificationMessage)
+    setTimeout(() => {
+      setNotificationMessage(null)
+    }, 5000)
   }
 
-
-  
-  const [username, setUsername] = useState('') 
+  const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
 
   const handleLogin = async event => {
     event.preventDefault()
     console.log('logging in with', username, password)
-    
     try {
       const user = await loginService.login({ username, password })
 
       window.localStorage.setItem(
-      'loggedBlogappUser', JSON.stringify(user)) 
+        'loggedBlogappUser', JSON.stringify(user))
       console.log(user)
       blogService.setToken(user.token)
       setUser(user)
@@ -144,9 +119,14 @@ const App = () => {
       }, 5000)
     }}
 
+  const handleLogout = () => {
+    window.localStorage.removeItem('loggedNoteappUser')
+    window.localStorage.clear()
+    setUser(null)
+  }
+
   const blogFormRef = useRef()
   const [loginVisible, setLoginVisible] = useState(false)
-  
   const loginForm = () => {
     const hideWhenVisible = { display: loginVisible ? 'none' : '' }
     const showWhenVisible = { display: loginVisible ? '' : 'none' }
@@ -188,36 +168,36 @@ const App = () => {
   const sortedBlogs = blogs.sort((a, b) => a.likes - b.likes)
 
   const blogDetailsForm = () => (
-      <Togglable buttonLabel="show details" ref={blogFormRef}>
+    <Togglable buttonLabel="show details" ref={blogFormRef}>
       <div>
-      <h3> Blog Details</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>Title</th>
-            <th>Author</th>
-            <th>URL</th>
-            <th>Likes</th>
-            <th>Add One Like</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {sortedBlogs.map(blog => (
-            <tr key={blog.id}>
-              <td>{blog.title}</td>
-              <td>{blog.author}</td>
-              <td> <a href={blog.url} target="_blank" rel="noopener noreferrer"> {blog.url} </a></td>
-              <td>{blog.likes}</td>
-              <td> <button onClick={() => handleAddLike(blog.id, blog.likes)}> Add Like </button> </td>
-              <td> <button id="windowButton" onClick={() => handleBlogDelete(blog.id)}> Delete </button> </td>
+        <h3> Blog Details</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Author</th>
+              <th>URL</th>
+              <th>Likes</th>
+              <th>Add One Like</th>
+              <th>Action</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {sortedBlogs.map(blog => (
+              <tr key={blog.id}>
+                <td>{blog.title}</td>
+                <td>{blog.author}</td>
+                <td> <a href={blog.url} target="_blank" rel="noopener noreferrer"> {blog.url} </a></td>
+                <td>{blog.likes}</td>
+                <td> <button onClick={() => handleAddLike(blog.id, blog.likes)}> Add Like </button> </td>
+                <td> <button id="windowButton" onClick={() => handleBlogDelete(blog.id)}> Delete </button> </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </Togglable>
-)
+  )
 
   return (
     <div>
@@ -227,34 +207,32 @@ const App = () => {
       {!user && loginForm()}
       {user && (
         <div>
-          <p>{user.name} logged in</p>
+          <p>{user.name} logged in <button onClick={() => handleLogout(user)}> Logout</button> </p>
           {blogForm()}
         </div>
       )}
-
-    {user && (
-      <div>
-      <table>
-        <thead>
-          <tr>
-            <th>Blog Titles</th>
-          </tr>
-        </thead>
-        <tbody>
-          {blogs.map(blog => (
-            <tr key={blog.id}>
-              <td>{blog.title}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      </div>
+      {user && (
+        <div>
+          <table>
+            <thead>
+              <tr>
+                <th>Blog Titles</th>
+              </tr>
+            </thead>
+            <tbody>
+              {blogs.map(blog => (
+                <tr key={blog.id}>
+                  <td>{blog.title}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
-
       {user && blogDetailsForm()}
       <Footer />
-      </div>
-      )
+    </div>
+  )
 }
 
 export default App

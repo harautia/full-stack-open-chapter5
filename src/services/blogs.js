@@ -13,14 +13,14 @@ const getAllBlogs = () => {
 
 const createBlog = newObject => {
   const config = {
-  headers: { Authorization: token }
+    headers: { Authorization: token }
   }
   return axios.post(baseUrl, newObject, config)
 }
 
 const addLikes = (blogId, newLikes) => {
   const config = {
-  headers: { Authorization: token }
+    headers: { Authorization: token }
   }
   return axios.put(`${baseUrl}/${blogId}`, newLikes, config )
 }
@@ -30,8 +30,8 @@ const deleteBlog = blogId => {
   return axios.delete(`${baseUrl}/${blogId}`)
 }
 
-export default { 
-  getAllBlogs: getAllBlogs, 
+export default {
+  getAllBlogs: getAllBlogs,
   createBlog: createBlog,
   deleteBlog: deleteBlog,
   addLikes: addLikes,

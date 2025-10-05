@@ -1,6 +1,6 @@
 const Blog = ({ blog }) => {
   return (
-      <tr>
+    <tr>
       <td>{blog.title}</td>
       <td>{blog.author}</td>
       <td>{blog.url}</td>
