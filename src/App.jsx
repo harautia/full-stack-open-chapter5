@@ -45,11 +45,6 @@ const App = () => {
       })
   }
 
-  const [newTitle, setNewTitle] = useState('')
-  const [newAuthor, setNewAuthor] = useState('')
-  const [newUrl, setNewUrl] = useState('')
-  const [likes, setLikes] = useState('')
-
   const [blogs, showBlogs]= useState([])
   useEffect(() => {
     blogService
@@ -69,34 +64,21 @@ const App = () => {
     }
   }, [])
 
-  const handleAddBlog = event => {
-    event.preventDefault()
-    const blogObject = {
-      id: String(blogs.length + 1),
-      title: newTitle,
-      author: newAuthor,
-      url: newUrl,
-      likes: likes
-    }
+  const addBlog = (blogObject) => {
+    blogFormRef.current.toggleVisibility()
     blogService
       .createBlog(blogObject)
       .then(response => {
-        console.log(response)
         showBlogs(blogs.concat(response.data))
-      })
-    setNewTitle('')
-    setNewAuthor('')
-    setNewUrl('')
-    setLikes('')
-    setNotificationMessage(
-      `Added blog title: '${newTitle}'`
-    )
-    console.log(notificationMessage)
-    setTimeout(() => {
-      setNotificationMessage(null)
-    }, 5000)
-  }
-
+        setNotificationMessage(
+          `Added blog title: '${response.data.title}'`
+        )
+        setTimeout(() => {
+          setNotificationMessage(null)
+        }, 5000)
+          })
+      }
+  
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
@@ -128,45 +110,25 @@ const App = () => {
   }
 
   const blogFormRef = useRef()
-  const [loginVisible, setLoginVisible] = useState(false)
-  const loginForm = () => {
-    const hideWhenVisible = { display: loginVisible ? 'none' : '' }
-    const showWhenVisible = { display: loginVisible ? '' : 'none' }
 
-    return (
-      <div>
-        <div style={hideWhenVisible}>
-          <button onClick={() => setLoginVisible(true)}>log in</button>
-        </div>
-        <div style={showWhenVisible}>
-          <LoginForm
-            username={username}
-            password={password}
-            handleUsernameChange={({ target }) => setUsername(target.value)}
-            handlePasswordChange={({ target }) => setPassword(target.value)}
-            handleLogin={handleLogin}
-          />
-          <button onClick={() => setLoginVisible(false)}>cancel</button>
-        </div>
-      </div>
+  const loginForm = () => (
+    <Togglable buttonLabel="login">
+      <LoginForm
+        username={username}
+        password={password}
+        handleUsernameChange={({ target }) => setUsername(target.value)}
+        handlePasswordChange={({ target }) => setPassword(target.value)}
+        handleLogin={handleLogin}
+      />
+    </Togglable>
     )
-  }
 
   const blogForm = () => (
     <Togglable buttonLabel="new blog" ref={blogFormRef}>
-      <BlogForm
-        newTitle={newTitle}
-        newAuthor={newAuthor}
-        newUrl={newUrl}
-        likes={likes}
-        handleTitleChange={({ target }) => setNewTitle(target.value)}
-        handleAuthorChange={({ target }) => setNewAuthor(target.value)}
-        handleUrlChange={({ target }) => setNewUrl(target.value)}
-        handleLikesChange={({ target }) => setLikes(target.value)}
-        handleAddBlog={handleAddBlog}
-      />
+      <BlogForm createBlog={addBlog}/>
     </Togglable>
   )
+
   const sortedBlogs = blogs.sort((a, b) => a.likes - b.likes)
 
   const blogDetailsForm = () => (
